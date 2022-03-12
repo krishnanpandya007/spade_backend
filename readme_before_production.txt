@@ -1,0 +1,1 @@
+spade_frontend > .env && SET NODE_ENV="production"

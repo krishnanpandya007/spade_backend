@@ -1,0 +1,13 @@
+1. python3 (by how to activate venv)
+2. venv
+3. django
+4. django-rest-framework
+5. django-ckeditor
+6. django-cors-headers
+7. django-taggit
+8. psycopg2-binary (first try without binary)
+9. djangorestframework-simplejwt
+10. requests
+11. django-taggit-serializer
+12. Pillow
+13. DONE

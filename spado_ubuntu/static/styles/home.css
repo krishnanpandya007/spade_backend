@@ -1,0 +1,319 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
+body{
+    height: 150vh;
+    /* background-color: #b03bd4; */
+}
+
+
+
+.home-banner{
+    width:100vw;
+    height:66vh;
+    max-height: 600px;
+    padding-top: 12%;
+    /* box-shadow: inset 0px -100px 100px #8411be; */
+
+    /* box-shadow: inset 0px -100px 100px #b03bd4; */
+    /* border: 2px solid red; */
+}
+
+.home-content{
+    margin-left: 53%;
+    /* margin-top: 12%; */
+    height: 45%;
+    width: 45%;
+}
+
+.home-content h2{
+    font-size: 3rem;
+    font-family: 'Raleway', sans-serif;
+    letter-spacing: 1px;
+    color: #ffe268;
+}
+
+.home-content h4{
+    margin-top: 4%;
+    line-height: 2rem;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 300;
+    color: aqua;
+}
+
+.home-content .home-explore{
+    margin-top: 7%;
+    color: whitesmoke;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: #23049d;
+    width: 35%;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;    
+    height: 32%;
+}
+
+.home-explore h3{
+    box-sizing: border-box;
+    margin-left: 17%;
+}
+
+.home-explore img{
+    animation: up-down 1s ease-out infinite alternate;
+}
+
+@keyframes up-down{
+    0%{
+        transform: translateY(-25%);
+    }
+    100%{
+        transform: translateY(25%);
+    }
+}
+
+.home-explore:hover{
+    cursor: pointer;
+}
+
+.chat-message{
+    /* background-color: whitesmoke; */
+    /* padding: 2vh; */
+    width: 94vw;
+    height: 60vh;
+    background-color: #aa2ee6;
+    max-height: 380px;
+    margin: 5vh 0 5vh 0;
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+
+    /* color: whitesmoke; */
+
+}
+.chat-info{
+    display: flexbox;
+    flex: 0.35; 
+    border-right:2px dashed #76478d;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.chat-upper-info{
+    height: 80%;
+    text-align: center;
+}
+.chat-upper-info a{
+    text-decoration: none;
+    font-size: 1.3rem;
+    /* border: 1px solid white; */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: grid;
+    place-items: center;
+    color: whitesmoke;
+    /* transform: translateY(35%); */
+}
+.chat-upper-info .chat-person-info{
+    display: flex;
+
+}
+/* .chat-upper-info .chat-upper-tags{ */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* flex-wrap: wrap */
+/* } */
+.chat-upper-info .chat-upper-tags .chat-upper-all-tags{
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+/* .chat-upper-info .chat-upper-tags .chat-upper-header-tag{ */
+    /* margin-left: 1%; */
+
+/* } */
+.chat-upper-info .chat-upper-tags h2{
+    /* display: inline-block; */
+    /* border: 1px solid red; */
+    /* float: left; */
+    /* width: 100%; */
+}
+.chat-upper-info .chat-upper-tags h4{
+    display: inline-block;
+    font-size: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    height: 25%;
+    font-weight: 500;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          00;
+    padding: 0.5% 3% 1% 3%;
+    text-align: center;
+    margin: 1.2% 0.7%;
+    border-radius: 1000px;
+    background-color: #0e49b5;
+    color: #c6fced;
+    width: auto;
+}
+.chat-descr{
+    display: flexbox;
+    flex: 0.65;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 65%;
+    height: 100%;
+}
+
+.chat-descr .chat-right-upper-descr{
+    /* border: 1px solid red; */
+    width: 100%;
+
+    /* border: 1px solid red; */
+
+    height: 75%;
+}
+.chat-descr .chat-right-upper-descr h2{
+    margin: 2% 0 0 2% ;
+    font-family: 'Poppins', sans-serif;
+    /* border: 1px solid red; */
+    /* letter-spacing: 1px; */
+}
+
+.chat-lower-info{
+    /* width: 50%; */
+    /* display: block; */
+    width: 35%;
+    background-color: aqua;
+    border-radius: 5px;
+    display: flex;
+    margin: 0 0 1% 1%;
+}
+
+.chat-lower-info h2{
+    font-size: 1rem;
+    margin: 2% 2% 2% 5%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /* text-align: center; */
+    font-weight: 400;
+    /* border: 1px solid red; */
+    display: flex;
+    place-items: center;
+
+}
+.chat-lower-info h3{
+    font-size: .8rem;
+    font-weight: 300;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /* text-align: center; */
+    display: grid;
+    place-items: center;
+
+    /* border: 1px solid red; */
+
+}
+
+.chat-right-upper-fulldescr{
+    /* border: 1px solid red; */
+    height: 70%;
+    /* box-shadow:inset -10px -15px 35px 10px red; */
+    /* overflow: hidden;
+    overflow-x:hidden;
+    overflow-y:auto; */
+    overflow: auto;
+
+}
+.chat-descr .chat-right-upper-descr h4{
+    margin: 2%;
+    /* color: whitesmoke; */
+    line-height: 180%;
+    font-family: 'Poppins', sans-serif;
+}
+.chat-descr .chat-right-bottom-descr{
+    width: 40%;
+    margin: 0 0 2% 2%;
+    height: 15%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    /* border: 1px solid red; */
+}
+
+.chat-descr .chat-right-bottom-descr .chat-right-bottom-like{
+    /* text-align: center; */
+    /* display: grid; */
+    /* place-items: center; */
+    /* display: inline-block; */
+    width: 30%;
+    /* border: 2px solid red; */
+    background-color: #af1dbd;
+    border-radius: 5px;
+    padding: 2% 2.5%;
+    display: flex;
+    justify-content: space-around;
+    transition: 0.3s ease-in-out;
+}
+
+.chat-descr .chat-right-bottom-descr .chat-right-bottom-like h4{
+    display: grid;
+    place-items:center;
+    border-left: 2px solid violet;
+    padding-left: 9%;
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    /* border-left: 2px solid */
+    /* margin-left: 50%; */
+    /* padding-left: 5%; */
+    /* margin-left: 5%; */
+}
+
+.chat-right-bottom-bookmark:hover, .chat-right-bottom-like:hover, .chat-right-bottom-share:hover{
+    /* border: 5px solid #af1dbd; */
+    box-shadow: 0 0 0 .2em #890596;
+    cursor: pointer;
+    /* background-color: #ffe268; */
+    /* width: 1000px; */
+}
+
+.chat-right-upper-part{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.view-image{
+    background-color: lightgreen;
+    border-radius: 5px;
+    width: 14.5%;
+    /* font-family: sans-serif; */
+    /* font-weight: 100; */
+    /* text-align: center */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5% 1%;
+    margin-right: 1%;
+    transition: 0.3s linear;
+}
+.view-image > h5{
+    font-size: .9rem;
+    font-weight: 100;
+}
+.view-image:hover{
+    cursor: pointer;
+    box-shadow: 0 0 0 3px #61b15a;
+}
+
+.jumble-popup{
+    animation: popup-image 1s ease-in 1;
+}
+
+@keyframes popup-image{
+    0%{
+        transform: scale(1);
+    }80%{
+        transform: scale(1.3);
+    }100%{
+        transform: scale(1);
+    }
+}

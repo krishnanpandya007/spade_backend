@@ -1,0 +1,82 @@
+
+<!-- No image included, report spam, svg icons -->
+
+{% extends 'base.html' %}
+{% load static %}
+<!-- <header> -->
+{% block content %}
+    <div class="home-banner" style="background: url({% static 'assets/background.jpg' %});background-repeat:no-repeat;background-size:cover;">
+        <div class="home-content">
+            <h2>Explore Proness.</h2>
+            
+            <h4>Join discussion and explore best tips and hacks GAMERS!</h4>
+            <!-- <a href="#first"> -->
+            <div class="home-explore" href=".chat-message">
+                <h3>Explore</h3>
+                <img src="{% static 'assets/down.svg' %}" style="width: 50%;height: 50%;" />
+            </div>
+            <!-- </a> -->
+        </div>
+
+    </div>
+    <div class="chat-message" id="first">
+        <div class="chat-info">
+            <!-- Profile pic, user_name, posted_at, tags -->
+            <div class="chat-upper-info">
+                <div class="chat-person-info">
+                    <div class="image-cover" style="width: 50px;height: 50px;position: relative;overflow: hidden;border-radius: 50%;margin: 3%;border: 4px solid #890596">
+                        <img src="{% static 'assets/default3.png' %}" alt="" style="display: inline;margin: 0 auto;margin-left: -20%;height: 100%;width: auto;">
+                    </div>
+                    <a href="#">krishnan</a>
+                </div>
+                <div class="chat-upper-tags">
+                    <!-- <div class="chat-upper-header-tag"> -->
+                    <h2>Tags:</h2>
+                    <!-- </div> -->
+                    <br>
+                    <!-- <div class="chat-upper-all-tags"> -->
+                        <h4>#coding</h4>
+                        <h4>#pubg</h4>
+                        <h4>#m416</h4>
+                        <h4>#peek</h4>
+                        <h4>#rush</h4>
+                        <h4>#running</h4>
+                        <h4>#jump</h4>
+                    <!-- </div> -->
+                </div>
+            </div>
+            <div class="chat-lower-info">
+                <h2>Posted :</h2>
+                <h3>3 days ago</h3>
+            </div>
+
+        </div>
+        <div class="chat-descr">
+            <div class="chat-right-upper-descr">
+                <div class="chat-right-upper-part">
+                    <h2>Title Of The Post</h2>
+                    <div class="view-image">
+                        <img src="{% static 'assets/image.png' %}" alt="" style="width: 20px;border-radius: 4px;">
+                        <h5>view image</h5>
+                    </div>
+                </div>
+                <div class="chat-right-upper-fulldescr">
+                    <h4>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ullam, sint reiciendis. Vel aliquid tempore quis consequatur sed officia repudiandae facere neque exercitationem, provident voluptate sint excepturi aperiam ex placeat? Error numquam quo dolor nostrum ipsam saepe ducimus veniam, itaque cum consequuntur obcaecati earum? Molestiae eaque amet officiis non deserunt voluptatum et illum in, sed saepe dolore cum quis dolor eos rerum ipsa nisi porro debitis placeat sunt cumque repudiandae voluptates mollitia neque. Consectetur harum pariatur nihil doloremque accusantium impedit aliquam sit? Ipsam saepe incidunt, nulla sed debitis ullam velit, commodi quisquam distinctio non accusantium odit omnis corporis, quas nihil. Id?</h4>
+                </div>
+            </div>
+            <div class="chat-right-bottom-descr">
+                <div class="chat-right-bottom-like" id="like-button">
+                    <img src="{% static 'assets/likebefore.png' %}" style="width: 30px;" alt="Like" id="disactive-like-1">
+                    <h4 id="like_count-1">576</h4>
+                </div>
+                <div class="chat-right-bottom-share" style="padding: 1.5% 2%;background-color: #af1dbd;border-radius: 5px;transition: 0.3s ease-in-out;">
+                    <img src="{% static 'assets/share.png' %}" alt="share" style="width: 30px;transform: translateY(8%);">
+                </div>
+                <div class="chat-right-bottom-bookmark" style="padding: 1.5% 2%;background-color: #af1dbd;border-radius: 5px;transition: 0.3s ease-in-out;">
+                    <img src="{% static 'assets/bookbefore.png' %}" alt="bookmark" style="width: 30px;transform: translateY(8%);">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'scripts/home.js' %}"></script>
+{% endblock content %}

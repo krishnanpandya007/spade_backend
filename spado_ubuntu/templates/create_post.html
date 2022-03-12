@@ -1,0 +1,64 @@
+{% load static %}
+<!-- craeate preview post option that show a big modal view with image on let and text on right we can use to mutiple file like home and here also -->
+<!DOCTYPE html>
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'styles/create_post.css' %}">
+    <title>Create Post</title>
+</head> 
+<body>
+        <div class="post-model">
+            <div class="post-info">
+                <img src="" alt="PP">
+                <h4>krishnan_pandya</h4>
+                Posted:automatic
+            </div> 
+            <div class="post-content">
+                <div class="images">
+                    <img src="" alt="BASIC_IMG">
+                    Your attached images are displayed here as soon as you post this!
+                </div>
+                <div class="post-descr">
+                    <h2>How to throw a nade using a gun in call of duty</h2>
+                    <h4>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum architecto earum modi beatae sed neque. Vel eos natus pariatur facere a, esse ipsa beatae voluptate, totam quaerat ipsum ullam. Beatae rerum asperiores illo accusantium officia.</h4>
+                </div>
+            </div>
+        </div>
+    <div action="#" method="post" class="main-container">
+        {% csrf_token %}
+        <!-- <fieldset id="title-cover"> -->
+            <!-- <legend>Title</legend> -->
+        <input type="text" name="title" id="title" placeholder="">
+        <!-- </fieldset> -->
+        <textarea name="editor" id="descr" cols="30" rows="10" placeholder="Describe Your View here"></textarea>
+        <img src="{% static 'assets/close.svg' %}" alt="" style="display: none;" id="close-btn-img">
+        <h3 class="top-legend">Your tags</h3>
+        <div id="store-tags">
+            <!-- <div id="tag"> -->
+
+                <!-- <h4>call-of-duty</h4>
+                <div class="close-btn">
+                    <img src="{% static 'assets/close.svg' %}" alt="" style="width: 15px" id="close-btn-image">
+                </div> -->
+            <!-- </div> -->
+            </div>
+        <div class="tags">
+            <input type="text" name="tags" id="tags">
+            <button itemid="add-tag" onclick="AddTag()">Add Tag</button>
+        </div>  
+        <input type="file" name="image" id="image">
+        <button type="submit">Submit</button>
+        <button type="reset">Clear</button>
+
+    </div>
+
+    <!-- <script src="{% static 'scripts/ckeditor/ckeditor.js' %}"></script>
+    <script>
+        CKEDITOR.replace('editor');
+    </script> -->
+    <script src="{% static 'scripts/create_post.js' %}"></script>
+</body>
+</html>

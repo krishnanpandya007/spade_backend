@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+}
+
+
+
+header{
+    /* position: fixed; */
+    width: 100vw;
+    background-color: #72147e;
+}
+
+.menubutton:hover{
+    cursor:pointer;
+}
+
+.menubutton{
+    display: flex;
+    /* position: fixed; */
+    /* margin-right: 93vw; */
+    float: right;
+    align-items: center;
+    justify-content: space-around;
+    width: 50px;
+    height: 50px;
+    border-radius: 7px;
+    background-color: #b8b5ff;
+}
+
+.menubutton:hover{
+    cursor:pointer;
+}
+
+
+.menubar{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #aa2ee6;
+    box-shadow:0px 0px 50px #aa2ee6;
+    /* box-shadow:0px 5px 50px #ffcc29;
+    animation: glow-running 2s ease-in-out infinite alternate; */
+}
+
+
+.signin-button{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border: 2px dotted rgb(59, 248, 75);
+    width: 10vw;
+    height: 6vh;
+    margin-right: 2vw;
+    /* padding: 2% 4%; */
+    border-radius: 5px;
+    
+    /* text-align: center; */
+    transition: 0.5s ease;
+    
+}
+
+
+.linecontainer{
+    display:flex;
+    /* border: 2px solid white; */
+    width:40px;
+    height:30px;
+    justify-content: space-around;
+    flex-direction: column;
+
+}
+
+.line{
+    width: 28px;
+    height: 5px;
+    border-radius:4px;
+    /* margin-top: 10.5%; */
+    margin-left: 15%;
+    
+    background-color: #7868e6;
+}
+
+.signin-button a{
+    text-decoration: none;
+    /* margin-top:5vh; */
+    /* border: 2px solid red; */
+    /* text-align: center; */
+    align-items: center;
+    letter-spacing: 1px;
+    color:rgb(59, 248, 75);
+    font-size: 1.5em;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+.signin-button:hover{
+    border: 2px dotted rgb(37, 209, 14);
+
+}
