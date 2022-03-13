@@ -19,7 +19,7 @@ from django.core.management.utils import get_random_secret_key
 mimetypes.add_type("text/css", ".css", True)
 # mimetypes.add_type("application/json", ".json", True)
 
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'oldprojectname.settings')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -82,7 +82,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsPostCsrfMiddleware',
 ]
 
-ROOT_URLCONF = 'spade_ubuntu.urls'
+ROOT_URLCONF = 'myproject.urls'
 
 TEMPLATES = [
     {
@@ -100,7 +100,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'spade_ubuntu.wsgi.application'
+WSGI_APPLICATION = 'myproject.wsgi.application'
 
 
 # Database
@@ -108,20 +108,22 @@ WSGI_APPLICATION = 'spade_ubuntu.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': os.getenv('go_server_name'),
+        'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': os.getenv('DB_NAME'),
         'NAME': 'spade_db',
 
-        # 'USER': os.getenv('go_server_user'),
+        # 'USER': os.getenv('DB_USER'),
         'USER': 'krishnanpandya',
 
-        # 'PASSWORD': os.getenv('go_server_pass') + "HASH8172",
+        # 'PASSWORD': os.getenv('DB_PASS'),
         'PASSWORD': 'rBtdjxqa9ZS6yzgt',
-        # 'HOST': os.getenv('go_server_host'),
+        # 'HOST': os.getenv('DB_HOST'),
         'HOST': 'spade-db-do-user-10987256-0.b.db.ondigitalocean.com',
 
-        # 'PORT': os.getenv('go_server_port')
-        'PORT': '25060'
+        # 'PORT': os.getenv('DB_PORT')
+        'PORT': '25060',
+
+        'OPTIONS': {'sslmode': 'require'},
 
     }
 }
