@@ -1,9 +1,11 @@
 # from django.shortcuts import render
 
+import email
 import re
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from api.forms import CreatePostForm
+from myproject.settings import EMAIL_HOST_USER
 # from requests.models import Response
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,6 +25,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import MultiPartParser, FormParser
 from user_profile.forms import EditProfilePicForm
 
+from django.core.mail import send_mail
+
+from user_profile.models import EmailVerification, get_random_verification_code
 
 # Create your views here.
 
@@ -76,6 +81,7 @@ class EditName(APIView):
 
     parser_classes = (JSONParser,)
     renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
@@ -90,10 +96,9 @@ class EditName(APIView):
         try:
             # Get the user 
 
-            past_username = request.data.get('past_username')
             first_name, last_name = request.data.get('new_name').split()
 
-            user = User.objects.get(username=past_username)
+            user = request.user
 
 
         except Exception as e:
@@ -154,10 +159,96 @@ class EditEmail(APIView):
         return Response({"success" : "Successfully, reset the email!"}, status=200)
 
 
+class SendVerificationCode(APIView):
+
+    parser_classes = (JSONParser,)
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+
+        '''
+        new_email: 'krishnanpandya@gmail.com'
+        '''    
+
+        try:
+            target_email = request.data.get('new_email')
+
+            target_exists = EmailVerification.objects.filter(email=target_email).exists()
+
+            email_verification:EmailVerification
+
+            if not target_exists:
+
+                email_verification = EmailVerification.objects.create(email=target_email)
+
+            else:
+
+                email_verification = EmailVerification.objects.get(email=target_email)
+                email_verification.verification_code = get_random_verification_code()
+
+
+
+            try:
+                flag = send_mail("Verify Email Address | Spade", f"Hello There,\n\nAs you are trying to change the email address to new one, please enter this verification code \n\n{email_verification.verification_code}", EMAIL_HOST_USER, [target_email], fail_silently=False)
+            except Exception as e:
+                print("ERROR: ", e)
+
+
+            email_verification.save()
+
+            return Response({"success" : "Please check your email to verify the code."}, status=200)
+
+
+        except Exception as e:
+            print("Already sent to that email address: ", e)
+            return Response({"error" : "Verification code already sent to your email"}, status=400)
+            
+
+class VerifyVerificationCode(APIView):
+
+    parser_classes = (JSONParser,)
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+
+        try:
+            past_username = request.data.get('past_username')
+            target_email = request.data.get('email')
+            verification_code = request.data.get('verification_code')
+
+            email_veriification_exists = EmailVerification.objects.filter(email=target_email).filter()
+
+            if email_veriification_exists:
+
+                email_verification = email_veriification_exists.first()
+
+                if (email_verification.verification_code == verification_code):
+
+                    user = User.objects.get(username=past_username)
+                    user.email = target_email
+                    user.save()
+                    return Response({"success" : "Email Reset Successfull"}, status=200)
+
+                else:
+                    return Response({"error" : "Verification code is Invalid!"}, status=200)
+            return Response({"error" : "Given e-mail not found"}, status=400)
+
+        except Exception as e:
+
+            return Response({"error" : "Verification Failed"}, status=400)
+
+
+            
+
+
+
+
+
 class EditUsername(APIView):
 
     parser_classes = (JSONParser,)
     renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
@@ -172,10 +263,10 @@ class EditUsername(APIView):
 
         try:
             # Get the user 
-            past_username = request.data.get('past_username')
+            # past_username = request.data.get('past_username')
             new_username = request.data.get('new_username')
 
-            user = User.objects.get(username=past_username)
+            user = User.objects.get(username=request.user.username)
 
 
         except Exception as e:
@@ -198,6 +289,7 @@ class EditStatus(APIView):
 
     parser_classes = (JSONParser,)
     renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
@@ -212,10 +304,10 @@ class EditStatus(APIView):
 
         try:
             # Get the user 
-            past_username = request.data.get('past_username')
+            
             new_status = request.data.get('new_status')
 
-            user = User.objects.get(username=past_username)
+            user = request.user
             account = Account.objects.get(user_name=user)
 
             assert new_status.capitalize() in ('Learning', 'Lazy', 'Working', 'Chilling', 'Spading'), "Invalid Status FOUND"
@@ -241,6 +333,7 @@ class EditStatusIndicator(APIView):
 
     parser_classes = (JSONParser,)
     renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
@@ -255,11 +348,11 @@ class EditStatusIndicator(APIView):
 
         try:
             # Get the user 
-            past_username = request.data.get('past_username')
-            print("PAST USERNAME :", past_username)
+          
+     
             new_statusIndicator = request.data.get('new_statusIndicator')
 
-            user = User.objects.get(username='k_a_p')
+            user = request.user
             account = Account.objects.get(user_name=user)
 
             assert new_statusIndicator.capitalize() in ('Do not disturb', 'Available', 'Busy', 'Away', 'Offline'), "Invalid Status Indicator FOUND"
@@ -289,6 +382,7 @@ class EditBio(APIView):
 
     parser_classes = (JSONParser,)
     renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
@@ -296,17 +390,16 @@ class EditBio(APIView):
         FORMAT:
         {
             'new_bio': 'newBio',
-            'past_username': 'pastUsername'
+
         } 
         '''
 
 
         try:
-            # Get the user 
-            past_username = request.data.get('past_username')
+
             new_bio = request.data.get('new_bio')
 
-            user = User.objects.get(username=past_username)
+            user = request.user
             account = Account.objects.get(user_name=user)
 
         except Exception as e:
@@ -338,6 +431,8 @@ class EditProfilepic(APIView):
 
     parser_classes = (FormParser,MultiPartParser)
     renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
 
     def post(self, request, format=None):
 
@@ -345,7 +440,7 @@ class EditProfilepic(APIView):
         FORMAT:
         {
             'new_profilePic': 'newProfilePic',
-            'past_username': 'pastUsername'
+
         } 
         '''
 
@@ -355,16 +450,17 @@ class EditProfilepic(APIView):
             # past_username = request.data.get('past_username')
             # new_profilePic = request.data.get('new_profilePic')
 
-            # user = User.objects.get(username=past_username)
+            user = request.user
             # account = Account.objects.get(user_name=request.user)
-            account = get_object_or_404(Account, user_name=User.objects.get(username='jevik_pandya'))
+            account = get_object_or_404(Account, user_name=user)
 
             account.profile_pic = self.request.data['profile_pic']
+            print("DEBUG:: ", self.request.FILES)
             account.save()
-            # reset_pic_form = EditProfilePicForm(request.POST or None, request.FILES or None, instance=account)
+            reset_pic_form = EditProfilePicForm(request.POST or None, request.FILES or None, instance=account)
 
-            # for field in reset_pic_form:
-            #     print("Name: ", field.name ," Error: ", field.errors)
+            for field in reset_pic_form:
+                print("Name: ", field.name ," Error: ", field.errors)
 
 
 
@@ -374,14 +470,14 @@ class EditProfilepic(APIView):
 
 
 
-            # if (reset_pic_form.is_valid()):
-            #     # reset_pic_form.save(commit=False)
-            #     # reset_pic_form.user_name = request.user.pk
+            if (reset_pic_form.is_valid()):
+                reset_pic_form.save(commit=False)
+                reset_pic_form.user_name = request.user.pk
             #     print(request.user)
-            #     obj = reset_pic_form.save(commit=False)
-            #     obj.save()
-            # else:
-            #     print("Invalid Profile Pic FOUND")
+                obj = reset_pic_form.save(commit=False)
+                obj.save()
+            else:
+                print("Invalid Profile Pic FOUND")
             
             return Response({"success" : "Successfully reset your Profile Pic!"}, status=200)
 
@@ -419,7 +515,7 @@ class ResetPassword(APIView):
             assert user.check_password(old_password), "Old Password seems Different!"
         except Exception as e:
             print("Error: While re-naming user bio: ", e)
-            return Response({"error" : "Can't reset your Password! Invlid Old Password or username"}, status=400)
+            return Response({"error" : "Can't reset your Password! Invlid Old Password"}, status=400)
 
         try:
 

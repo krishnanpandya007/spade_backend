@@ -96,7 +96,7 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name="liked_by", blank=True)
     dislikes = models.ManyToManyField(User, related_name="disliked_by", blank=True)
     
-    comments = models.ManyToManyField(Comment, blank=True)
+    comments = models.ManyToManyField(Comment, related_name='posts', blank=True)
 
     # images = models.ManyToManyField(PostImage, related_name="post_image")
     image_1 = models.ImageField(upload_to='images/posts/images_1 %y/%m/', blank=True, null=True)

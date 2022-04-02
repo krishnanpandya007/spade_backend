@@ -1,0 +1,91 @@
+CREATE OR REPLACE FUNCTION get_score_of_post_i2i(post_id_1 integer, user_id_1 integer)
+
+RETURNS numeric
+
+LANGUAGE plpgsql
+
+AS $function$
+
+declare 
+	res numeric;
+	
+begin
+
+	select avg_score(post_id_1) + sum(get_weight(a.post_id, post_id_1)*a.action::int)/sum(get_weight(a.post_id, post_id_1))
+	
+	into res
+	
+	from spado_ubuntu_user_post_action a where a.post_id!=post_id_1 group by a.user_id having a.user_id=user_id_1;
+	
+	return res;
+	
+END;
+$function$
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION public.avg_score_i2i(post_id_1 integer) RETURNS numeric LANGUAGE plpgsql AS $function$
+
+declare
+	res numeric;
+begin
+
+	select avg(action::int) into res from spado_ubuntu_user_post_action group by post_id having post_id=post_id_1;
+	
+	return res;
+	
+	
+end;
+
+$function$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION public.get_weight_i2i(post_id_1 integer, post_id_2 integer) 
+
+RETURNS numeric
+
+LANGUAGE plpgsql 
+
+AS $function$ 
+
+declare
+	res numeric;
+	
+begin
+
+	select
+	
+	corr(a.action::int, b.action::int)
+	
+	into res
+	
+	from spado_ubuntu_user_post_action a
+	
+	join (select * from spado_ubuntu_user_post_action b where b.post_id=post_id_2) b on a.post_id <> b.post_id and a.user_id=b.user_id group by a.post_id, b.post_id having a.post_id=post_id_1;
+	
+	return res;
+	
+end;
+
+$function$
+
+
+
+
+ 	

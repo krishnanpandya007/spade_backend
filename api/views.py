@@ -6,14 +6,15 @@ from urllib import request
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from api.forms import CreatePostForm
+from frontend_caching.revalidate.post import full_revalidate_author_posts, revalidate_post_comments_by_id, revalidate_post_dislikes_by_id, revalidate_post_likes_by_id
 # from requests.models import Response
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from spado_ubuntu.communicator import predict_post_by_trend
+from spado_ubuntu.communicator import predict_post_by_trend,get_similar_posts_I2I, predict_posts_by_popular, predict_posts_by_recent, predict_posts_by_relevant
 from spado_ubuntu.models import Account, Comment, Post
-from spado_ubuntu.serializers import PostSerializer, SearchResultSerializer
+from spado_ubuntu.serializers import CommentSerializer, PostSerializer, SearchResultSerializer
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
@@ -157,6 +158,17 @@ def create_post(req, format=None, *args, **kwargs):
     else:
         print('[FAILED]: unsuccessfull save attempt!')
 
+
+    all_author_posts = PostSerializer(Post.objects.filter(author=user_account), many=True)
+
+    success = full_revalidate_author_posts(author_name=req.user.username, data=all_author_posts)
+
+    if(success):
+        print("Successfully Updated re-Validation")
+    else:
+        print("Failed to update re-Validation (FRONTEND)")
+
+
     # except Exception as e:
     #     print("Can't Do this: ", e)
 
@@ -166,6 +178,7 @@ class CreateComment(APIView):
 
     renderer_classes = (JSONRenderer,)
     parser_classes = (JSONParser,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
@@ -173,7 +186,7 @@ class CreateComment(APIView):
         try:
 
             comment_data = request.data['comment']
-            username = request.data['username']
+
             post_id = request.data['post_id']
         
         except Exception as e:
@@ -181,12 +194,12 @@ class CreateComment(APIView):
             return Response({'error': 'Invalid pre-request found'}, status=400)
 
         comment_data = request.data['comment']
-        username = request.data['username']
+
         post_id = request.data['post_id']
 
         try:
 
-            user = User.objects.get(username=username)
+            user = request.user
         
         except Exception as e:
 
@@ -196,7 +209,7 @@ class CreateComment(APIView):
 
         try:
 
-            print(username, comment_data)
+            # print(username, comment_data)
 
             comment = Comment.objects.create(author=Account.objects.get(user_name=user), descr=comment_data)
             comment.save()
@@ -211,6 +224,16 @@ class CreateComment(APIView):
             post = Post.objects.get(pk=post_id)
             post.comments.add(comment)
             post.save()
+
+            # As we update the comment we've also have to tell the frontend to update server-side-cache
+            comment_serializer = CommentSerializer(post.comments.all(), many=True) # For target post
+
+            success = revalidate_post_comments_by_id(post_id, comment_serializer.data)
+
+            if(success):
+                print("Successfully Updated re-Validation")
+            else:
+                print("Failed to update re-Validation (FRONTEND)")
         
         except Exception as e:
             
@@ -221,17 +244,46 @@ class CreateComment(APIView):
         
             # print("username is invalid!")
 
+COMMON_TAGS_LIMIT = 10
+
+class LoadCommonTags(APIView):
+
+    renderer_classes = (JSONRenderer,)
+    parser_classes = (JSONParser,)
+
+    def get(self, request, format=None):
+
+        try:
+
+
+            tags = [tag.name for tag in Post.tags.most_common()]
+            # tags = ['call-of-duty', 'free-fire']
+
+            tags = tags[:min(COMMON_TAGS_LIMIT, len(tags)-1)]
+
+            return Response({'common_tags': tags}, status=200)
+
+
+        except Exception as e:
+            print(e)
+            return Response({'error': 'Can\'t able to retrieve common tags'}, status=400)
+            
+        
+
+
+
 
 class HandleActionComment(APIView):
 
     renderer_classes = (JSONRenderer,)
     parser_classes = (JSONParser,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
         try:
             
-            username = request.data.get('username')
+
             action = request.data.get('action')
             comment_id = request.data.get('comment_id')
 
@@ -243,7 +295,7 @@ class HandleActionComment(APIView):
         
         try:
             
-            user = User.objects.get(username=username)
+            user = request.user
 
         except Exception as e:
             print(e)
@@ -268,10 +320,26 @@ class HandleActionComment(APIView):
                 # Add like
                 comment.likes.add(user)           
                 
+            comment.save()
 
         except Exception as e:
             print(e)
             return Response({'error': 'Can\'t perform instructed action'}, status=500)
+
+        # As we update the comment we've also have to tell the frontend to update server-side-cache
+
+        parent_post = Comment.objects.get(pk=comment_id).posts.all().first()
+
+        comments = parent_post.comments.all() # Get all comments of post which target_comment is associated with
+
+        comments_serializer = CommentSerializer(comments, many=True)
+
+        success = revalidate_post_comments_by_id(parent_post.pk, comments_serializer.data)
+
+        if(success):
+            print("Successfully Updated re-Validation")
+        else:
+            print("Failed to update re-Validation (FRONTEND)")
 
         
         return Response({'success': 'Action Updated Successfully'}, status=200)
@@ -306,17 +374,20 @@ class HandleActionComment(APIView):
 @api_view(['POST'])
 def load_account_posts(request):
     try:
-        quantity = int(request.data.get('quantity'))
+
         author = request.data.get('author')
 
-        posts = Post.objects.filter(author__user_name__username=author)
+        print("AUTHOR: ", author)
+
+        posts = Post.objects.filter(author=Account.objects.get(user_name=User.objects.get(username=author)))
+
+        print("POSTS: ", posts)
 
         if (posts.exists()):
             post_serializer = PostSerializer(posts, many=True)
             return Response(post_serializer.data, status=200)
 
-
-        return Response({'error': 'No posts found associated with this author.'}, status=404)
+        return Response({}, status=200)
         
     except Exception as e:
         print("Invalid Formation Found!", e)
@@ -338,7 +409,29 @@ def load_posts(request):
         # When user likes any post the score of that post is 0 as we try  to not show that again to user
 
         # result = predict_post_for_userid(is_authenticated=False, user_id=1, catagory=catagory)
-        result = predict_post_by_trend()
+        user_id = request.user.pk if request.user else -1
+        if catagory == "trending":
+
+            result = predict_post_by_trend()
+
+        elif catagory == "relevant":
+
+            if user_id == -1:
+                result = predict_post_by_trend()
+            else:
+
+                result = predict_posts_by_relevant(user_id=user_id)
+
+        elif catagory == "recent":
+
+            result = predict_posts_by_recent()
+
+        elif catagory == "popular":
+
+            result = predict_posts_by_popular()
+
+        else:
+            result = []
 
         print(result)
 
@@ -377,35 +470,83 @@ class HandleActionPost(APIView):
 
     renderer_classes = (JSONRenderer,)
     parser_classes = (JSONParser,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
 
         try:
-            username:str = request.data.get('username')
+ 
             post_id:int = request.data.get('post_id') 
             choice:list = request.data.get('choice')  # Like/Dislike 
             action:list = request.data.get('action')  # Add/remove   
             print('Data: ', request.data, "\nPost: ", request.POST)
             target_post = Post.objects.filter(pk=post_id)
-            user = User.objects.filter(username=username)
+            user = request.user
 
-            if target_post.exists() and user.exists():
+            if target_post.exists():
                 target_post = target_post.first()
-                user = user.first()
+                
                 if 'remove' in action:
                     remove_pos = action.index('remove')
                     if choice[remove_pos] == 'like':
                         # remove dislike
                         target_post.likes.remove(user)
+
+                        # Update likes to re-validation
+
+                        likes_list_usernames = [ user.username for user in (target_post.likes.all())]
+
+                        success = revalidate_post_likes_by_id(post_id, likes_list_usernames)
+
+                        if(success):
+                            print("Successfully Updated re-Validation")
+                        else:
+                            print("Failed to update re-Validation (FRONTEND)")
+
                     else:
                         target_post.dislikes.remove(user)
+
+                        # Update dis-likes to re-validation
+
+                        dislikes_list_usernames = [ user.username for user in (target_post.dislikes.all())]
+
+                        success = revalidate_post_dislikes_by_id(post_id, dislikes_list_usernames)
+
+                        if(success):
+                            print("Successfully Updated re-Validation")
+                        else:
+                            print("Failed to update re-Validation (FRONTEND)")
+
                 if 'add' in action:
                     add_pos  = action.index('add')
                     if choice[add_pos] == 'like':
                         # Add Like
                         target_post.likes.add(user)
+
+                        # Update likes to re-validation
+                        likes_list_usernames = [ user.username for user in (target_post.likes.all())]
+
+                        success = revalidate_post_likes_by_id(post_id, likes_list_usernames)
+
+                        if(success):
+                            print("Successfully Updated re-Validation")
+                        else:
+                            print("Failed to update re-Validation (FRONTEND)")
+
                     else:
                         target_post.dislikes.add(user)
+
+                        # Update dis-likes to re-validation
+                        dislikes_list_usernames = [ user.username for user in (target_post.dislikes.all()) ]
+
+                        success = revalidate_post_dislikes_by_id(post_id, dislikes_list_usernames)
+
+                        if(success):
+                            print("Successfully Updated re-Validation")
+                        else:
+                            print("Failed to update re-Validation (FRONTEND)")
+
+
                         
                 target_post.save()
 
@@ -450,9 +591,82 @@ def get_post_by_search_text(request):
         return Response({"error": "Can't fetch posts related to search_query"}, status=500)
 
 
+class GetPostsByTagname(APIView):
+
+    renderer_classes = (JSONRenderer,)
+    parser_classes = (JSONParser,)
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+
+            tagname = kwargs.get('tagname')
+
+            posts = Post.objects.filter(tags__name=tagname)
+
+            posts_serializer = PostSerializer(posts, many=True)
+
+            return Response(posts_serializer.data, status=200)
+        
+        except Exception as e:
+
+            print("Can't Filter Posts by filter (TAGNAME): ", e)
+
+            return Response({'error': "Can't able to get posts by given tagname"}, status=400)
 
 
+class GetPostsById(APIView):
+
+    renderer_classes = (JSONRenderer,)
+    parser_classes = (JSONParser,)
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+
+            post_id = kwargs.get('postid')
+
+            print("POST ID: ", post_id)
+            target_post = Post.objects.get(pk=post_id)
+            relvant_posts_ids = get_similar_posts_I2I(post_id=post_id)
+            relvant_posts = Post.objects.filter(pk__in=relvant_posts_ids)
+
+            target_post_serializer = PostSerializer(target_post)
+
+            relevant_posts_serializer = PostSerializer(relvant_posts, many=True)
+
+            all_posts_data = [target_post_serializer.data]
+            all_posts_data.extend(relevant_posts_serializer.data)
+
+            return Response(all_posts_data, status=200)
+
+        except Exception as e:
+            print("Can't get Post By ID: ", e)
+            return Response({'error': 'Cant get post by single Id'})
 
 
+class GetPostsBySearchQuery(APIView):
 
+    renderer_classes = (JSONRenderer,)
+    parser_classes = (JSONParser,)
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+
+            slug = kwargs.get('slug')
+            slug = slug.replace('-', ' ')
+
+            query_set = Post.objects.all()
+
+            filtered_posts = [post for post in query_set.annotate(similarity=TrigramSimilarity('title', slug)).order_by('-similarity')][:MAX_LOAD_MORE_POSTS_LIMIT+1]
+
+            posts_serializer = PostSerializer(filtered_posts, many=True)
+
+            return Response(posts_serializer.data, status=200)
+
+        except Exception as e:
+
+            print("Can't fetch Posts By Search Query: ", e)
+            return Response({"error": 'Not able to load posts'}, status=500)
 

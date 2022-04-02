@@ -18,6 +18,7 @@ from spado_ubuntu.serializers import AccountSerializer
 class RegisterView(APIView):
 
     parser_classes = (JSONParser,)
+    
 
     def post(self, req):
 
@@ -44,8 +45,9 @@ class RegisterView(APIView):
                 if (8 <= len(username) <=20):
 
                     username_regex = r'^(?=[a-zA-Z0-9._]{8,15}$)(?!.*[_.]{2})[^_.].*[^_.]$'
-
-                    if not (re.fullmatch(username)):
+                    print('here')
+                    if not (re.fullmatch(username_regex,username)):
+                        print('here2')
                         return Response({"error": "username can only have '_', '.' at anywhere between with characters and numbers"})
                 else:
                     return Response({"error": "Username may have minimum 8, maximum 15 characters"})

@@ -54,6 +54,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id','author_name', 'tags', 'title', 'descr', 'likes', 'dislikes', 'image_1', 'image_2', 'image_3', 'image_4', 'time_since','profile_pic', 'first_name', 'last_name', 'comments']
 
+
     
 class AccountSerializer(serializers.ModelSerializer):
 
@@ -61,7 +62,6 @@ class AccountSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='user_name.first_name')
     last_name = serializers.ReadOnlyField(source='user_name.last_name')
     email = serializers.ReadOnlyField(source='user_name.email')
-    
     created_posts = PostSerializer(many=True, read_only=True, source="get_posts")
 
     class Meta:

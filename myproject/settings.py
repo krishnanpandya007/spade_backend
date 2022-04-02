@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 from datetime import timedelta
 import os
 import mimetypes
-
+import sys
 from django.core.management.utils import get_random_secret_key
 
 mimetypes.add_type("text/css", ".css", True)
@@ -33,8 +33,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1, localhost").split(",")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = True
+# DEBUG = os.getenv("DEBUG", "False") == "True"
+
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     # Added manually
     # 'spado.apps.mainconfig',
     'api',
+    'user_profile',
     'spado_ubuntu',
     'rest_framework',
     'ckeditor',
@@ -204,6 +206,14 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
     
 )
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'team.spadebeta@gmail.com'
+EMAIL_HOST_PASSWORD = 'nkpllmfiserycxxe'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'default from email'
 
 # mimetypes.add_type("text/html", ".html", True)
 
